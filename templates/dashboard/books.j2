@@ -1,0 +1,42 @@
+{% extends 'dashboard/__layout.j2' %}
+{% block body %}
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-800">تاریخچه</h2>
+            <span class="text-xs text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-bold">{{ allBookLen }} مورد</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-right">
+                <thead class="bg-gray-50 text-gray-500 text-sm">
+                <tr>
+                    <th class="p-4 font-medium">کتاب</th>
+
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+
+                {% for loan  in all_book %}
+                    <tr class="hover:bg-gray-50/50 transition">
+
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="w-10 h-14 bg-gray-200 rounded shadow-sm shrink-0">
+                                <img src="{{ url+loan.book.front_cover }}">
+                            </div>
+
+                            <a href="{{ url_for("getBook",book_id = loan.book.id) }}">
+                                <span class="font-bold text-gray-700 text-sm">{{ loan.book.title }}</span>
+                            </a>
+
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

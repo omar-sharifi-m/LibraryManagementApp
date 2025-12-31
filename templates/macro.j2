@@ -54,6 +54,28 @@
 {% endmacro %}
 
 
+{% macro dashboardNav(path,url,text,value) %}
+    {% if path != url %}
+        <a href="{{ url }}">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <p class="text-gray-500 text-sm">{{ text }}</p>
+                <p class="text-3xl font-black mt-2 text-gray-800">{{value}}</p>
+            </div>
+        </a>
+    {% else %}
+
+        <a href="{{ url }}">
+            <div class="bg-indigo-600 p-6 rounded-3xl text-white">
+                <p class="opacity-80 text-sm">{{text}}</p>
+                <p class="text-3xl font-black mt-2">{{value}}</p>
+            </div>
+        </a>
+    {% endif %}
+
+
+{% endmacro %}
+
+
 {% macro textArea(label,name,args= "") %}
     <div>
         <label for="{{ name }}" class="block text-sm font-medium mb-1">{{ label }}</label>
@@ -67,13 +89,13 @@
     {% set msg  = flash_context(request) %}
     {% if msg.get("flush") %}
         <script>
-        Toastify({
-  text: "{{ msg.get("flush") }}",
-  duration: 3000,
-  gravity: "top",
-  position: "right",
-  backgroundColor:"red",
-}).showToast();
+            Toastify({
+                text: "{{ msg.get("flush") }}",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "red",
+            }).showToast();
         </script>
     {% endif %}
 {% endmacro %}

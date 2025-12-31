@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, Query,Form
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import and_
 from fastapi.responses import HTMLResponse, Response
@@ -11,13 +11,13 @@ from starlette import status
 from starlette.responses import RedirectResponse
 
 
-from Core import Files
+from Core import Files, Password
 from Core.security import Authentication
 
-from Model import Books, Tags, Score, Loans
+from Model import Books, Tags, Score, Loans,User
 from Schema import TokenData
 from database import get_db
-from Core import flash_context
+from Core import flash_context,remin_day
 
 router = APIRouter(prefix="/user")
 
@@ -44,6 +44,7 @@ def average_score(scores:List[Score]):
 templates.env.globals["inject_user"] = inject_user
 templates.env.globals["average_score"] = average_score
 templates.env.globals["flash_context"] = flash_context
+templates.env.globals["remain_day"] = remin_day
 
 @router.get("/books", response_class=HTMLResponse)
 async def userIndex(request: Request, session: Session = Depends(get_db), q: str = Query(None),
@@ -62,7 +63,28 @@ async def userIndex(request: Request, session: Session = Depends(get_db), q: str
                                       {"request": request, "books": books, "url": file.url(), "tags": tags.all(),
                                        "tag": tags.where(Tags.id == tag_id).first().title if tag_id >= 0 else None})
 
-
+@router.get("/profile", response_class=HTMLResponse)
+async def profile(request: Request, session: Session = Depends(get_db),user:TokenData = Depends(Authentication.reqLogin)):
+    profile = session.get(User,user.user_id)
+    return templates.TemplateResponse("dashboard/profile.j2",{"request": request,"profile": profile})
+@router.post("/profile/update")
+async def update_profile(request: Request, session: Session = Depends(get_db),user:TokenData = Depends(Authentication.reqLogin)
+                         ,code_meli:str=Form(None),
+                         last_name:str=Form(None),
+                         first_name:str=Form(None),
+password:str=Form(None),
+                         ):
+    model = session.get(User,user.user_id)
+    if code_meli:
+        model.code_meli = code_meli
+    if last_name:
+        model.lastName = last_name
+    if first_name:
+        model.firstName = first_name
+    if password:
+        model.password = Password.hash(password)
+    session.commit()
+    return RedirectResponse(request.url_for("profile"),status_code=status.HTTP_302_FOUND)
 @router.get("/books/{book_id}",response_class=HTMLResponse)
 async def getBook(book_id: int, request: Request, session: Session = Depends(get_db)):
     book = session.query(Books).options(selectinload(Books.tags),
@@ -96,7 +118,24 @@ async def setScore(request:Request,book_id:int,score:int,session: Session = Depe
 @router.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, session: Session = Depends(get_db),
                     user: TokenData = Depends(Authentication.reqLogin)):
-    return templates.TemplateResponse("user/dashboard.j2",{"request": request})
+    query = session.query(Loans).where(Loans.user_id == user.user_id)
+    total_loans = len(query.where(and_(Loans.is_loaned == True)).all())
+    in_loan_book = query.where(and_(Loans.is_loaned == True,Loans.is_returnd == False)).all()
+    f = Files()
+
+    return templates.TemplateResponse("dashboard/index.j2",{"request": request,"total_loans":total_loans, "in_loan_book":in_loan_book,"in_loan_len":len(in_loan_book),"url": f.url()})
+
+
+@router.get("/dashboard/Books", response_class=HTMLResponse)
+async def dashboardBooks(request: Request, session: Session = Depends(get_db), user: TokenData = Depends(Authentication.reqLogin)):
+    query = session.query(Loans).where(Loans.user_id == user.user_id)
+    total_loans = len(query.where(and_(Loans.is_loaned == True)).all())
+    in_loan_book = query.where(and_(Loans.is_loaned == True,Loans.is_returnd == False)).all()
+    all_book = query.where(and_(Loans.is_loaned == True,Loans.is_returnd == True)).all()
+    f = Files()
+
+    return templates.TemplateResponse("dashboard/books.j2",{"request": request,"all_book":all_book,"allBookLen":len(all_book),"total_loans":total_loans,"in_loan_len":len(in_loan_book),"url": f.url()})
+
 
 @router.get("/books/{book_id}/reserve", response_class=HTMLResponse)
 async def reserve(request:Request,book_id:int,session: Session = Depends(get_db), user: TokenData = Depends(Authentication.reqLogin)):

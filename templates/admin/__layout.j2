@@ -1,0 +1,209 @@
+{% from "macro.j2" import adminSidebarItem, form_render,input,textArea,flush %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"
+      x-data="{ sidebarOpen: false, addBookOpen: false }">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت کتابخانه</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+          rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            border-radius: 0.5rem; /* rounded-lg */
+            border-color: #e5e7eb; /* border-gray-200 */
+            padding: 4px;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #4f46e5; /* indigo-600 */
+            ring: 2px #c7d2fe;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+    </style>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+
+    <!-- Overlay (mobile sidebar) -->
+    <div
+            x-show="sidebarOpen"
+            x-transition.opacity
+            class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+            @click="sidebarOpen = false">
+    </div>
+
+    <!-- Sidebar -->
+    <aside
+            class="fixed md:static inset-y-0 right-0 w-64 bg-indigo-900 text-white z-30
+               transform md:transform-none transition-transform duration-300"
+            :class="sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'">
+
+        <div class="p-6 text-2xl font-bold border-b border-indigo-800">
+            کتابخانه من
+        </div>
+
+        <nav class="mt-6 space-y-1">
+            {{ adminSidebarItem(request.url, url_for("adminIndex"), "داشبورد") }}
+            {{ adminSidebarItem(request.url, url_for("adminGetBooks"), "کتاب ها") }}
+            {{ adminSidebarItem(request.url, url_for("adminLoans"), "درخواست امانات") }}
+            {{ adminSidebarItem(request.url, url_for("admin_add_loans"), "امانات") }}
+
+            {{ adminSidebarItem(request.url, url_for("logout"), "خروج") }}
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 overflow-y-auto">
+
+        <!-- Header -->
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+
+            <!-- Mobile menu button -->
+            <button
+                    class="md:hidden text-gray-700"
+                    @click="sidebarOpen = true">
+                ☰
+            </button>
+
+            <h2 class="text-xl font-semibold text-gray-800">
+                پنل مدیریتی
+            </h2>
+            <button
+                    @click="addBookOpen = true"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                {% block button %}
+                    افزودن کتاب
+
+                {% endblock %}
+
+            </button>
+
+        </header>
+
+        <!-- Add Book Modal -->
+        <div x-show="addBookOpen" x-cloak>
+
+            <!-- Overlay -->
+            <div
+                    class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                    x-transition.opacity
+                    @click="addBookOpen = false">
+            </div>
+
+
+            <div
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    x-transition>
+
+                <div
+                        class="bg-white w-full max-w-lg rounded-xl shadow-lg p-6 flex flex-col max-h-[90vh]"
+                        @click.stop>
+
+                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                        <h3 class="text-lg font-bold text-gray-800">
+
+                        </h3>
+                        <button
+                                @click="addBookOpen = false"
+                                class="text-gray-500 hover:text-gray-700">
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="overflow-y-auto pr-2 custom-scrollbar">
+                        {% block DialogForm %}
+                            <h1> افزودن کتاب </h1>
+                        <form action="/admin/addbook" method="POST" enctype="multipart/form-data">
+
+                            {{ input("text","عنوان","title","required") }}
+                            {{ input("text","نویسنده","author","required") }}
+                            {{ textArea("توضیحات","description","required") }}
+                            {{ input("number","تعداد","count","value=1 min=1") }}
+                            {{ input("file","جلد کتاب","cover","required") }}
+                            {{ input("file","فایل pdf"+"(درصورت وجود)","pdf") }}
+                            {{ input("file","فایل صوتی"+"(درصورت وجود)","audio") }}
+
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-bold mb-2">تگ‌ها</label>
+                                <select id="tags_select" name="tags_list" multiple="multiple" class="w-full">
+                                    <option value=""></option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">تگ‌ها را انتخاب کنید یا تایپ کرده و اینتر
+                                    بزنید.</p>
+                            </div>
+
+                            <div class="flex justify-end gap-2 pt-4 sticky bottom-0 bg-white pb-2">
+                                <button
+                                        type="submit"
+                                        class="px-10 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+                                    ذخیره
+                                </button>
+                            </div>
+                        </form>
+                        {% endblock %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block body %}
+        {% endblock %}
+    </main>
+</div>
+
+</body>
+{% block script %}
+
+<script>
+    $(document).ready(function () {
+        $('#tags_select').select2({
+            dropdownParent: $('#tags_select').parent(),
+            tags: true, // اجازه می‌دهد کاربر تگ جدید تایپ کند
+            tokenSeparators: [',', ' '], // جدا کردن تگ‌ها با کاما یا فاصله
+            placeholder: "تگ‌های مورد نظر را انتخاب یا تایپ کنید",
+            dir: "rtl", // پشتیبانی از راست‌چین
+            width: '100%' // هماهنگی با عرض فرم
+        });
+    });
+
+    async function getTags() {
+        let tags = document.getElementById("tags_select")
+        respone = await fetch("/api/books/tags")
+        const res = await respone.json()
+        res.forEach(tag => {
+            const option = new Option(tag.title, tag.title, false, false);
+            tags.appendChild(option);
+        });
+        $(tags).trigger('change');
+    }
+
+    getTags()
+{% endblock %}
+
+</script>
+{{ flush(request) }}
+</html>
+

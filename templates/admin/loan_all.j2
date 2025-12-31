@@ -1,0 +1,154 @@
+{% extends 'admin/__layout.j2' %}
+{% block button %}
+    امانت کتاب
+{% endblock %}
+
+{% block DialogForm %}
+    <h1>امانت کتاب</h1>
+    <form action="{{ url_for("add_loan_admin") }}" method="post">
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">کاربر</label>
+            <select id="user" name="user" class="w-full">
+                <option value=""></option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">
+
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">کتاب</label>
+            <select id="book" name="book" class="w-full">
+                <option value=""></option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">
+
+            </p>
+        </div>
+        <div class="flex justify-end gap-2 pt-4 sticky bottom-0 bg-white pb-2">
+            <button
+                    type="submit"
+                    class="px-10 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+                ذخیره
+            </button>
+        </div>
+    </form>
+
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $('#book').select2({
+                dropdownParent: $('#book').parent(),
+                tokenSeparators: [',', ' '], // جدا کردن تگ‌ها با کاما یا فاصله
+                placeholder: "کتاب مورد نظر را انتخاب یا تایپ کنید",
+                dir: "rtl", // پشتیبانی از راست‌چین
+                width: '100%' // هماهنگی با عرض فرم
+            });
+        });
+        $(document).ready(function () {
+            $('#user').select2({
+                dropdownParent: $('#user').parent(),
+                tokenSeparators: [',', ' '], // جدا کردن تگ‌ها با کاما یا فاصله
+                placeholder: "کاربر مورد نظر را انتخاب یا تایپ کنید",
+                dir: "rtl", // پشتیبانی از راست‌چین
+                width: '100%' // هماهنگی با عرض فرم
+            });
+        });
+        let token = "Bearer {{ request.cookies["access_token"] }}"
+
+        async function getbook() {
+            let books = document.getElementById("book")
+            respone = await fetch("{{url_for("get_all_books")}}", {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': 'Bearer {{ request.cookies["access_token"] }}'
+                }
+            })
+            const res = await respone.json()
+            res.forEach(book => {
+                const option = new Option(book.title, book.id, false, false);
+                books.appendChild(option);
+            });
+            $(books).trigger('change');
+        }
+
+        async function getUser() {
+            let users = document.getElementById("user")
+            respone = await fetch("{{url_for("get_all_users")}}", {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': 'Bearer {{ request.cookies["access_token"] }}'
+                }
+            })
+            const res = await respone.json()
+            res.forEach(user => {
+                const option = new Option(user.username, user.id, false, false);
+                users.appendChild(option);
+            });
+            $(users).trigger('change');
+        }
+
+        getUser()
+        getbook()
+    </script>
+{% endblock %}
+
+
+
+
+
+
+{% block body %}
+
+
+    <ul class="bg-white rounded-xl shadow divide-y">
+        {% for loan in loans %}
+            <li class="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
+                <div>
+                    <p class="font-medium text-gray-800">{{ loan.book.title }}</p>
+                    <p class="text-sm text-gray-500">{{ loan.user.username }}</p>
+                </div>
+
+                <div class="flex gap-2">
+                    {% set x = remin_day(loan) %}
+                    {% if x <= 0 %}
+                        <p class="text-sm px-3 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200">
+
+                            {{ x * -1 }}
+                            روز تاخیر
+                        </p>
+                    {% else %}
+                        <p class="text-sm px-3 py-1 rounded bg-green-100 text-green-600 hover:bg-green-200">
+
+                            {{ x }}
+                            روز مانده
+                        </p>
+                    {% endif %}
+<a href="{{ url_for("add_loan_extension",loan_id=loan.id) }}">
+
+                        <button class="text-sm px-3 py-1 rounded bg-blue-100 hover:bg-blue-200">
+                            تمدید
+                        </button>
+                    </a>
+                    <a href="{{ url_for("adminReturns",loan_id=loan.id) }}">
+
+                        <button class="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">
+                            برگشت
+                        </button>
+                    </a>
+                </div>
+            </li>
+        {% else %}
+            <li class="px-4 py-6 text-center text-gray-500">
+                موردی برای نمایش وجود ندارد
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- دیالوگ -->
+
+
+
+{% endblock %}

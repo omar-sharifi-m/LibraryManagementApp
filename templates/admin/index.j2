@@ -1,0 +1,47 @@
+{% extends 'admin/__layout.j2' %}
+{% block body %}
+
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-r-4 border-blue-500">
+                        <p class="text-gray-500 text-sm">کل کتاب‌ها</p>
+                        <p class="text-3xl font-bold">{{ total_books }}</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-r-4 border-green-500">
+                        <p class="text-gray-500 text-sm">کتاب‌های موجود</p>
+                        <p class="text-3xl font-bold">{{total_books - available}}</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-r-4 border-red-500">
+                        <p class="text-gray-500 text-sm">امانات تاخیری</p>
+                        <p class="text-3xl font-bold">{{deadlines}}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b">
+                        <h3 class="font-bold text-gray-700">آخرین کتاب‌های اضافه شده</h3>
+                    </div>
+                    <table class="w-full text-right">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-gray-600 font-medium">عنوان کتاب</th>
+                                <th class="p-4 text-gray-600 font-medium">نویسنده</th>
+                                <th class="p-4 text-gray-600 font-medium">تعداد</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                        {% for i in books %}
+                        <tr>
+                                <td class="p-4">{{i.book.title}}</td>
+                                <td class="p-4">{{i.user.username}}</td>
+                                <td class="p-4">{{ i.total_copies }}</td>
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+{% endblock %}
+

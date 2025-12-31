@@ -1,0 +1,130 @@
+{% extends 'user/__layout.j2' %}
+
+{% block body %}
+    <div class="bg-white rounded-2xl shadow p-6">
+        <!-- بخش بالا: تصویر + مشخصات -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- ستون چپ: تصویر + امتیاز + دکمه‌ها -->
+            <div class="flex flex-col items-center">
+
+                <!-- تصویر کتاب -->
+                <img src="{{ url }}{{ book.front_cover }}"
+                     alt="{{ book.title }}"
+                     class="w-64 h-96 object-cover rounded-xl shadow-md mb-4">
+
+                <!-- امتیاز (ستاره‌ها) -->
+                <div class="flex gap-1 mb-6">
+                    {% for i in range(1,6) %}
+                        {% if i <= average_score(book.scores) %}
+                            <a href="/user/books/{{ book.id }}/score/{{ i }}">
+                                <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                    <path d="M10 15l-5.878 3.09L5.82 11.545.943 7.41l6.561-.955L10 .5l2.496 5.955 6.561.955-4.878 4.135 1.699 6.545z"/>
+                                </svg>
+                            </a>
+
+                        {% else %}
+                            <a href="/user/books/{{ book.id }}/score/{{ i }}">
+
+                                <svg class="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                    <path d="M10 15l-5.878 3.09L5.82 11.545.943 7.41l6.561-.955L10 .5l2.496 5.955 6.561.955-4.878 4.135 1.699 6.545z"/>
+                                </svg>
+                            </a>
+
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- دکمه‌ها -->
+                <div class="w-full flex flex-col gap-3">
+                    <a href="{{ url_for("reserve",book_id=book.id) }}" class="text-center bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">
+                    <button class="bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">
+                       رزرو کردن
+                    </button>
+                    </a>
+
+                    {% if book.pdf_url %}
+                        <a href="{{ book.pdf_url }}"
+                           class="text-center bg-red-600 text-white py-2 rounded-xl hover:bg-red-700 transition">
+                            دانلود نسخه PDF
+                        </a>
+                    {% endif %}
+
+                    {% if book.audio_url %}
+                        <a href="{{ book.audio_url }}"
+                           class="text-center bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition">
+                            نسخه صوتی
+                        </a>
+                    {% endif %}
+                </div>
+
+
+            </div>
+
+            <!-- ستون راست: مشخصات کتاب -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+
+                <h2 class="text-2xl font-bold text-gray-800">
+                    {{ book.title }}
+                </h2>
+
+                <p class="text-gray-600">
+                    نویسنده: <span class="font-semibold">{{ book.author }}</span>
+                </p>
+
+                <p class="text-gray-700 leading-7">
+                    {{ book.description }}
+                </p>
+
+                <!-- تگ‌ها -->
+                <div class="flex flex-wrap gap-2 mt-2">
+                    {% for tag in book.tags %}
+                        <span class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
+                        {{ tag.title }}
+                    </span>
+                    {% endfor %}
+                </div>
+
+                <div class="text-sm text-gray-500 mt-2">
+                    تعداد نسخه موجود: {{ book.total_copies }}
+                </div>
+            </div>
+        </div>
+
+        <!-- نظرات -->
+{#        <div class="mt-12">#}
+{##}
+{#            <h3 class="text-xl font-bold text-gray-800 mb-6">#}
+{#                نظرات کاربران#}
+{#            </h3>#}
+{##}
+{#            <!-- نظر برگزیده -->#}
+{#            {% if featured_comment %}#}
+{#                <div class="bg-indigo-50 border-r-4 border-indigo-500 p-5 rounded-xl mb-6">#}
+{#                    <p class="text-gray-800 font-semibold mb-2">#}
+{#                        {{ featured_comment.user_name }}#}
+{#                    </p>#}
+{#                    <p class="text-gray-700 leading-7">#}
+{#                        {{ featured_comment.content }}#}
+{#                    </p>#}
+{#                </div>#}
+{#            {% endif %}#}
+{##}
+{#            <!-- لیست نظرات -->#}
+{#            <div class="space-y-4">#}
+{#                {% for comment in comments %}#}
+{#                    <div class="bg-gray-50 p-4 rounded-xl">#}
+{#                        <p class="text-sm font-semibold text-gray-700 mb-1">#}
+{#                            {{ comment.user_name }}#}
+{#                        </p>#}
+{#                        <p class="text-gray-600 leading-7">#}
+{#                            {{ comment.content }}#}
+{#                        </p>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+{##}
+{#        </div>#}
+    </div>
+
+{% endblock %}

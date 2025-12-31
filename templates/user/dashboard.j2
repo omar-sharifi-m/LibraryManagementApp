@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروفایل کاربری</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="container mx-auto px-4 py-10 max-w-6xl">
+        <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row items-center gap-6">
+            <div class="w-24 h-24 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <div class="text-center md:text-right flex-1">
+                <h1 class="text-2xl font-bold text-gray-800">امیرحسین عزیز، خوش آمدی!</h1>
+                <p class="text-gray-500 mt-1">عضویت ویژه • از فروردین ۱۴۰۲</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="bg-gray-100 text-gray-700 px-5 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition">ویرایش پروفایل</button>
+                <a href="{{ url_for("logout") }}">
+
+                <button class="bg-red-50 text-red-600 px-5 py-2 rounded-xl text-sm font-medium hover:bg-red-100 transition">خروج</button>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-indigo-600 p-6 rounded-3xl text-white">
+                <p class="opacity-80 text-sm">کتاب‌های در دست امانت</p>
+                <p class="text-3xl font-black mt-2">۳</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <p class="text-gray-500 text-sm">کل کتاب‌های خوانده شده</p>
+                <p class="text-3xl font-black mt-2 text-gray-800">۴۲</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <p class="text-gray-500 text-sm">امتیاز باشگاه مشتریان</p>
+                <p class="text-3xl font-black mt-2 text-yellow-500">۱۵۰</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <p class="text-gray-500 text-sm">جریمه معوقه</p>
+                <p class="text-3xl font-black mt-2 text-red-500">۰</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-gray-800">امانات فعلی</h2>
+                <span class="text-xs text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-bold">۳ مورد</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right">
+                    <thead class="bg-gray-50 text-gray-500 text-sm">
+                        <tr>
+                            <th class="p-4 font-medium">کتاب</th>
+                            <th class="p-4 font-medium">تاریخ امانت</th>
+                            <th class="p-4 font-medium">مهلت بازگشت</th>
+                            <th class="p-4 font-medium">وضعیت</th>
+                            <th class="p-4 font-medium">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="p-4 flex items-center gap-3">
+                                <div class="w-10 h-14 bg-gray-200 rounded shadow-sm shrink-0"></div>
+                                <span class="font-bold text-gray-700 text-sm">انسان در جستجوی معنا</span>
+                            </td>
+                            <td class="p-4 text-sm text-gray-600 font-medium">۱۴۰۲/۰۹/۱۵</td>
+                            <td class="p-4 text-sm text-gray-600 font-medium">۱۴۰۲/۱۰/۱۵</td>
+                            <td class="p-4">
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-bold">در امان</span>
+                            </td>
+                            <td class="p-4">
+                                <button class="text-indigo-600 text-sm font-bold hover:underline">تمدید</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="p-4 flex items-center gap-3">
+                                <div class="w-10 h-14 bg-gray-200 rounded shadow-sm shrink-0"></div>
+                                <span class="font-bold text-gray-700 text-sm">قلعه حیوانات</span>
+                            </td>
+                            <td class="p-4 text-sm text-gray-600 font-medium">۱۴۰۲/۰۹/۲۰</td>
+                            <td class="p-4 text-sm text-red-500 font-bold">۱۴۰۲/۰۹/۲۷</td>
+                            <td class="p-4">
+                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs font-bold">تاخیر</span>
+                            </td>
+                            <td class="p-4">
+                                <button class="text-red-600 text-sm font-bold hover:underline">پرداخت جریمه</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

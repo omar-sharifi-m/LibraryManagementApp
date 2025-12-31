@@ -1,0 +1,190 @@
+{% extends 'user/__layout.j2' %}
+
+{% block body %}
+    <!-- فیلتر تگ‌ها -->
+    <div class="mb-8 bg-white rounded-2xl shadow p-4">
+        <label for="tagFilter" class="block text-sm font-semibold text-gray-700 mb-2">
+            فیلتر بر اساس تگ
+        </label>
+
+        <div class="relative w-full sm:w-64">
+            <select id="tagFilter" onchange="(document.location.href = `/user/books?tag_id=${this.value}`)"
+                    class="w-full appearance-none bg-gray-100 border border-gray-300 rounded-xl py-2 px-4 pr-10 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none text-gray-700">
+                {% if tag %}
+                    <option disabled hidden selected>{{ tag }}</option>
+
+                {% endif %}
+                <option value="-1">همه تگ ها</option>
+
+                {% for i  in  tags %}
+                    <option value="{{ i.id }}">{{ i.title }}</option>
+
+                {% endfor %}
+            </select>
+            <!-- آیکن فلش -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-5 h-5 absolute left-3 top-2.5 text-gray-500 pointer-events-none"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+    </div>
+    <!-- لیست کتاب‌ها -->
+    <div id="booktable" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- کارت کتاب -->
+        {% for book in books %}
+            <div class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden bookCard">
+                <!-- تصویر + نشان‌ها -->
+                <div class="relative">
+                    <img src="{{ url+book.front_cover }}" alt="جلد کتاب"
+                         class="w-full h-96 object-cover">
+
+                    <!-- نشان PDF -->
+                    {% if book.pdf_url %}
+
+                        <span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-lg shadow">
+                PDF
+            </span>
+
+                    {% endif %}
+                    {% if book.audio_url %}
+
+                        <span class="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-lg shadow">
+                صوتی
+            </span>
+                    {% endif %}
+
+                </div>
+
+                <div class="p-4 flex flex-col gap-2">
+                    <h2 class="text-lg font-bold text-gray-800 line-clamp-1">
+                        {{ book.title }}
+                    </h2>
+
+                    <p class="text-sm text-gray-500">
+                        نویسنده: {{ book.author }}
+                    </p>
+
+
+                    <!-- دسته‌بندی‌ها -->
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        {% for tag in book.tags %}
+                            <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
+                    {{ tag.title }}
+                </span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <a href="/user/books/{{ book.id }}"
+                           class="text-sm text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            مشاهده جزئیات
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+        <div id="scrollObserver"></div>
+
+    <script>
+        function createBook(cover, pdf, audio, title, author, tags, id) {
+            let url = "{{ url }}"
+            let pdfstamp = ""
+            let audiostamp = ""
+            if (pdf) {
+                pdfstamp = `<span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-lg shadow">PDF</span>`
+            }
+            if (audio) {
+                audiostamp = `<span class="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-lg shadow">صوتی</span>`
+            }
+            let tag_string = ""
+            for (let i = 0; i < tags.length; i++) {
+                tag_string += `<span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">${tags[i].title}</span>`
+            }
+            return `<div class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden bookCard">
+                <!-- تصویر + نشان‌ها -->
+                <div class="relative">
+                    <img src="${url}${cover}" alt="جلد کتاب"
+                         class="w-full h-96 object-cover">
+                    <!-- نشان PDF -->
+                    ${pdfstamp}
+                    ${audiostamp}
+                </div>
+
+                <div class="p-4 flex flex-col gap-2">
+                    <h2 class="text-lg font-bold text-gray-800 line-clamp-1">${title}</h2>
+
+                    <p class="text-sm text-gray-500">نویسنده:${author}</p>
+
+
+                    <!-- دسته‌بندی‌ها -->
+                    <div class="flex flex-wrap gap-2 mt-2">
+${tag_string}
+                        </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <a href="/user/books/${id}"
+                           class="text-sm text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            مشاهده جزئیات
+                        </a>
+                    </div>
+                </div>
+            </div>`
+        }
+        async function loadbook() {
+            let booktable = document.getElementById("booktable")
+            let bookcount = document.getElementsByClassName("bookCard").length
+            const params = new URLSearchParams(window.location.search);
+            let tag_id = params.get("tag_id")
+            let q = params.get("q")
+            let url = `/api/books/books?c=${bookcount}`
+            if(tag_id){
+                url += `&tag_id=${tag_id}`
+            }
+            if(q){
+                url += `&q=${q}`
+            }
+
+
+
+            let respone = await fetch(url)
+
+            const books = await respone.json()
+            c = 0
+            books.forEach(book => {
+                booktable.innerHTML += createBook(book.front_cover, book.pdf_url, book.audio_url, book.title, book.author, book.tags, book.id)
+                c += 1
+            });
+            return c;
+        }
+
+
+        const observerTarget = document.getElementById("scrollObserver");
+        let finished = false
+        let loading = false
+
+        const observer = new IntersectionObserver( async (entries) => {
+            if (entries[0].isIntersecting) {
+                if (!finished) {
+                    if (!loading) {
+                        loading = true
+                      const loadedCount = await loadbook();
+                        if (loadedCount <= 3) {
+                            finished = true
+                        }
+
+                        loading = false
+                    }
+                }
+
+            }
+        }, {
+            root: null,          // viewport
+            threshold: 0.1
+        });
+
+        observer.observe(observerTarget);
+    </script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'auth/__layout.j2' %}
+
+
+{% block body %}
+
+
+    <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500 rounded-full opacity-50"></div>
+    <div class="absolute top-10 right-10 w-20 h-20 bg-indigo-400 rounded-full opacity-30"></div>
+
+    <div class="z-10 mt-auto">
+        <p class="text-sm opacity-70">هنوز عضو نشده‌اید؟</p>
+        <a href="{{ url_for("register") }}">
+
+            <button class="mt-2 border-2 border-white/50 hover:border-white px-6 py-2 rounded-xl transition font-medium">
+                ساخت حساب کاربری
+            </button>
+        </a>
+
+    </div>
+    </div>
+
+
+    <div class="w-full md:w-1/2 p-8 md:p-12">
+        <div class="text-center md:text-right mb-10">
+            <h1 class="text-2xl font-black text-gray-800">ورود به پنل کاربری</h1>
+            <p class="text-gray-500 mt-2 text-sm">اطلاعات خود را وارد کنید</p>
+        </div>
+
+
+        <form method="POST" class="space-y-4">
+            <h2 class="text-2xl font-bold mb-6">ورود به حساب</h2>
+
+            {{ form_render(form) }}
+
+            <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">
+                ورود
+            </button>
+
+
+            <p class="text-center mt-8 text-sm text-gray-500 md:hidden">
+                حساب ندارید؟ <a href="{{ url_for("register") }}" class="text-indigo-600 font-bold">ثبت‌نام کنید</a>
+            </p>
+
+
+{% endblock %}

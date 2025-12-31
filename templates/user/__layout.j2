@@ -1,0 +1,85 @@
+{% from "macro.j2" import form_render,flush %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فهرست کتاب‌ها</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet"
+          type="text/css"/>
+     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    {% set _user = inject_user(request) %}
+</head>
+<body class="bg-gray-50">
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-6">
+                <h1 class="text-2xl font-bold text-indigo-700">کتاب‌گردی</h1>
+                <nav class="hidden md:flex gap-4 text-gray-600">
+{#                    <a href="#" class="hover:text-indigo-600 transition">خانه</a>#}
+{#                    <a href="#" class="hover:text-indigo-600 transition">جدیدترین‌ها</a>#}
+{#                    <a href="#" class="hover:text-indigo-600 transition">درباره ما</a>#}
+                </nav>
+            </div>
+
+            <div class="relative w-full md:w-1/2">
+                <form action="{{ url_for("userIndex") }}" method="get">
+                    <input type="text" name="q" placeholder="جستجوی کتاب، نویسنده"
+                           class="w-full bg-gray-100 border-none rounded-full py-2 px-12 focus:ring-2 focus:ring-indigo-400 outline-none">
+                </form>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-4 top-2.5 text-gray-400"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            {% if  _user["is_authenticated"] %}
+                <div class="flex items-center gap-3">
+                    <button class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition">
+                        <a href="{{ url_for("dashboard") }}">
+                            پروفایل
+
+                        </a>
+                    </button>
+                </div>
+            {% else %}
+                <div class="flex items-center gap-3">
+                    <button class="text-gray-600 px-4 py-2 hover:bg-gray-100 rounded-lg">
+                        <a href="{{ url_for("login_get") }}">
+                            ورود
+
+                        </a>
+                    </button>
+                    <button class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition">
+                        <a href="{{ url_for("register") }}">
+                            ثبت‌نام اعضا
+
+                        </a>
+                    </button>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</header>
+<main class="container mx-auto px-4 py-8">
+    {% block body %}
+
+
+    {% endblock %}
+{{ flush(request) }}
+</main>
+</body>
+</html>

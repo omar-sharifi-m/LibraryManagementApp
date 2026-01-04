@@ -45,7 +45,7 @@
                             {% endfor %}
                         </div>
 
-                        <a href="/books/{{ book.id }}"
+                        <a href="{{ url_for("getBook",book_id = book.id) }}"
                            class="block text-center bg-gray-50 text-indigo-600 py-2 rounded-lg font-medium hover:bg-indigo-600 hover:text-white transition-colors">
                             مشاهده جزئیات
                         </a>

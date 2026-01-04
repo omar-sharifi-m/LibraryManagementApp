@@ -218,3 +218,51 @@ async def adminAccept(loan_id:int,request: Request,session: Session = Depends(ge
         return RedirectResponse(request.url_for("adminLoans"),status_code=status.HTTP_302_FOUND)
     request.session["flush"] = "انجام نشد"
     return RedirectResponse(request.url_for("adminLoans"),status_code=status.HTTP_302_FOUND)
+
+@router.get("/book/edit/{book_id}")
+async def edit_book(book_id:int,request: Request,session: Session = Depends(get_db)):
+    book = session.get(Books,book_id)
+    return templates.TemplateResponse("admin/book_edit.j2",{"request":request,"book":book})
+
+@router.post("/book/edit/{book_id}")
+async def edit_book_post(request: Request,
+                         book_id:int,
+                         title: str= Form(None),
+                         author: str =Form(None),
+                         description: str = Form(None),
+                         count: int = Form(None),
+                         cover: UploadFile = File(None),
+                         pdf: UploadFile = File(None),
+                         audio: UploadFile = File(None),
+                         session: Session = Depends(get_db)):
+    model = session.get(Books,book_id)
+    if model is None:
+        return RedirectResponse(request.url_for("getBook",book_id = book_id),status_code=status.HTTP_302_FOUND)
+    if title:
+        model.title = title
+    if author:
+        model.author = author
+    if description:
+        model.description = description
+    if count:
+        model.count = count
+    f = Files()
+
+    if cover.filename:
+        print(f"Cover is Not None {cover.filename}")
+        safe_name = f.safe_name(cover)
+        f.upload(cover,safe_name)
+        model.cover = safe_name
+
+    if pdf.filename:
+        safe_name = f.safe_name(pdf)
+        f.upload(pdf,safe_name)
+        model.pdf_url = safe_name
+    if audio.filename:
+        safe_name = f.safe_name(audio)
+        f.upload(audio,safe_name)
+        model.audio = safe_name
+    session.add(model)
+    session.commit()
+    request.session["flush"] = "انجام شد"
+    return RedirectResponse(request.url_for("getBook",book_id = book_id),status_code=status.HTTP_302_FOUND)

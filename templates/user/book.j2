@@ -30,17 +30,25 @@
                                     <path d="M10 15l-5.878 3.09L5.82 11.545.943 7.41l6.561-.955L10 .5l2.496 5.955 6.561.955-4.878 4.135 1.699 6.545z"/>
                                 </svg>
                             </a>
-
                         {% endif %}
                     {% endfor %}
-                </div>
 
+                </div>
+                {% if _user["current_user"]["role"] == "admin" %}
+                    <button class="bg-yellow-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-yellow-700 transition">
+                        <a href="{{ url_for("edit_book",book_id = book.id) }}">
+                            ویرایش
+                        </a>
+                    </button>
+                    <br>
+                {% endif %}
                 <!-- دکمه‌ها -->
                 <div class="w-full flex flex-col gap-3">
-                    <a href="{{ url_for("reserve",book_id=book.id) }}" class="text-center bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">
-                    <button class="bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">
-                       رزرو کردن
-                    </button>
+                    <a href="{{ url_for("reserve",book_id=book.id) }}"
+                       class="text-center bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">
+                        <button class="bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">
+                            رزرو کردن
+                        </button>
                     </a>
 
                     {% if book.pdf_url %}
@@ -92,39 +100,39 @@
         </div>
 
         <!-- نظرات -->
-{#        <div class="mt-12">#}
-{##}
-{#            <h3 class="text-xl font-bold text-gray-800 mb-6">#}
-{#                نظرات کاربران#}
-{#            </h3>#}
-{##}
-{#            <!-- نظر برگزیده -->#}
-{#            {% if featured_comment %}#}
-{#                <div class="bg-indigo-50 border-r-4 border-indigo-500 p-5 rounded-xl mb-6">#}
-{#                    <p class="text-gray-800 font-semibold mb-2">#}
-{#                        {{ featured_comment.user_name }}#}
-{#                    </p>#}
-{#                    <p class="text-gray-700 leading-7">#}
-{#                        {{ featured_comment.content }}#}
-{#                    </p>#}
-{#                </div>#}
-{#            {% endif %}#}
-{##}
-{#            <!-- لیست نظرات -->#}
-{#            <div class="space-y-4">#}
-{#                {% for comment in comments %}#}
-{#                    <div class="bg-gray-50 p-4 rounded-xl">#}
-{#                        <p class="text-sm font-semibold text-gray-700 mb-1">#}
-{#                            {{ comment.user_name }}#}
-{#                        </p>#}
-{#                        <p class="text-gray-600 leading-7">#}
-{#                            {{ comment.content }}#}
-{#                        </p>#}
-{#                    </div>#}
-{#                {% endfor %}#}
-{#            </div>#}
-{##}
-{#        </div>#}
+        {#        <div class="mt-12">#}
+        {##}
+        {#            <h3 class="text-xl font-bold text-gray-800 mb-6">#}
+        {#                نظرات کاربران#}
+        {#            </h3>#}
+        {##}
+        {#            <!-- نظر برگزیده -->#}
+        {#            {% if featured_comment %}#}
+        {#                <div class="bg-indigo-50 border-r-4 border-indigo-500 p-5 rounded-xl mb-6">#}
+        {#                    <p class="text-gray-800 font-semibold mb-2">#}
+        {#                        {{ featured_comment.user_name }}#}
+        {#                    </p>#}
+        {#                    <p class="text-gray-700 leading-7">#}
+        {#                        {{ featured_comment.content }}#}
+        {#                    </p>#}
+        {#                </div>#}
+        {#            {% endif %}#}
+        {##}
+        {#            <!-- لیست نظرات -->#}
+        {#            <div class="space-y-4">#}
+        {#                {% for comment in comments %}#}
+        {#                    <div class="bg-gray-50 p-4 rounded-xl">#}
+        {#                        <p class="text-sm font-semibold text-gray-700 mb-1">#}
+        {#                            {{ comment.user_name }}#}
+        {#                        </p>#}
+        {#                        <p class="text-gray-600 leading-7">#}
+        {#                            {{ comment.content }}#}
+        {#                        </p>#}
+        {#                    </div>#}
+        {#                {% endfor %}#}
+        {#            </div>#}
+        {##}
+        {#        </div>#}
     </div>
 
 {% endblock %}

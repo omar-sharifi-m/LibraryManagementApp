@@ -44,10 +44,10 @@
     {% endif %}
 {% endmacro %}
 
-{% macro input(type,label,name,args= "") %}
+{% macro input(type,label,name,args= "",value = Null) %}
     <div>
         <label for="{{ name }}" class="block text-sm font-medium mb-1">{{ label }}</label>
-        <input type="{{ type }}" {{ args }} id="{{ name }}" name="{{ name }}"
+        <input type="{{ type }}" {{ args }} value="{{ value }}" id="{{ name }}" name="{{ name }}"
                class="w-full border rounded-lg px-3 py-2"
         >
     </div>
@@ -76,11 +76,13 @@
 {% endmacro %}
 
 
-{% macro textArea(label,name,args= "") %}
+{% macro textArea(label,name,args= "",value = Null) %}
     <div>
         <label for="{{ name }}" class="block text-sm font-medium mb-1">{{ label }}</label>
-        <textarea name="{{ name }}" {{ args }} id="{{ name }}" rows="3"
-                  class="w-full border rounded-lg px-3 py-2"></textarea>
+        <textarea name="{{ name }}" {{ args }}  id="{{ name }}" rows="3"
+                  class="w-full border rounded-lg px-3 py-2">
+            {{ value }}
+        </textarea>
     </div>
 {% endmacro %}
 

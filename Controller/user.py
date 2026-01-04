@@ -28,6 +28,7 @@ templates = Jinja2Templates(directory="templates")
 def inject_user(request: Request):
     token = request.cookies.get("access_token")
     user = Authentication.validateToken(token) if token else None
+
     return {
         "current_user": user,
         "is_authenticated": user is not None

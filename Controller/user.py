@@ -21,7 +21,7 @@ from Core import flash_context,remin_day
 
 router = APIRouter(prefix="/user")
 
-router.mount("/static", StaticFiles(directory="static"), name="static")
+# router.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 

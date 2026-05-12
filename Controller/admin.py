@@ -20,7 +20,7 @@ from database import get_db
 from Core  import flash_context,remin_day
 
 router = APIRouter(prefix="/admin", dependencies=[Depends(Authentication.adminLogin), Depends(Authentication.reqLogin)])
-router.mount("/static", StaticFiles(directory="static"), name="static")
+# router.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 templates.env.globals["flash_context"] = flash_context
 templates.env.globals["remin_day"] = remin_day

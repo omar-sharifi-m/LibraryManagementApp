@@ -15,7 +15,7 @@ from Core import flash_context
 
 router = APIRouter(prefix="/account")
 
-router.mount("/static", StaticFiles(directory="static"), name="static")
+# router.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 templates.env.globals["flash_context"] = flash_context
 @router.get("/login",response_class=HTMLResponse)

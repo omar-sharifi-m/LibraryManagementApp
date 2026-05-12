@@ -9,6 +9,7 @@ load_dotenv()
 from contextlib import asynccontextmanager
 from starlette.middleware.sessions import SessionMiddleware
 
+from fastapi.staticfiles import StaticFiles
 from fastapi import  FastAPI,Request
 from Controller.api import auth,books
 from Controller import account,user,admin
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     SessionMiddleware,
